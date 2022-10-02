@@ -48,7 +48,9 @@ GAME_RUNNING = True
 pygame.mixer.pre_init(44100, 16, 1, 512)
 pygame.mixer.init()
 bomb_drop_sound = pygame.mixer.Sound(ASSETS + "/" + "bomb_dropping.wav")
-bomb_explosion_sound = pygame.mixer.Sound(ASSETS + "/" + "bomb_explosion.wav")
+plane_crash_sound = pygame.mixer.Sound(ASSETS + "/" + "bomb_explosion.wav")
+building_destroy_sound = pygame.mixer.Sound(ASSETS + "/" + "bomb-explode.wav")
+
 
 ########################## CLASSES AND FUNCTIONS #########################
 
@@ -110,7 +112,7 @@ class Plane:
         pygame.draw.rect(gamesurface,BOMB_COLOR,(b_x, b_y, 8, 5))
 
     def crash_into_building(self):
-        pygame.mixer.Sound.play(bomb_explosion_sound)
+        pygame.mixer.Sound.play(plane_crash_sound)
 
 
 class Building:
@@ -178,6 +180,8 @@ class Building:
                 self.draw_building_roof = False
                 if self.building_levels > 0:
                     if self.levels_destroyed < self.max_levels_to_destroy:
+			# Play destruction sound
+                        self.destroy_level_sound()
                         self.building_levels -= 1
                         self.levels_destroyed += 1
                         if self.building_levels <= 0:
@@ -189,6 +193,11 @@ class Building:
                         self.levels_destroyed = 0
                         TOTAL_BOMBS_FALLING -= 1
                         bomb_drop_sound.stop()
+
+    def destroy_level_sound(self):
+        bomb_drop_sound.stop()
+        pygame.mixer.Sound.play(building_destroy_sound)
+
 
 class Bomb:
 
